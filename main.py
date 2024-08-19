@@ -165,6 +165,22 @@ def get_directors(df, nombre_director):
         
     return result
 
+def recomendaciones(df, titulo_de_la_filmación):
+     df_filter = df.loc[df['title'].str.lower() == titulo_de_la_filmación.lower()]
+     if not df_filter.empty:
+         result = {
+            'Primera recomendacion': df_filter['rec1'].iloc[0],
+            'Segunda recomendacion': df_filter['rec2'].iloc[0],
+            'Tercera recomendacion': df_filter['rec3'].iloc[0],
+            'Cuarta recomendacion': df_filter['rec4'].iloc[0],
+            'Quinta recomendacion': df_filter['rec5'].iloc[0]
+            }
+     else:
+         result ={
+              'El texto ingresado no es una pelicula': titulo_de_la_filmación
+         }
+     return result
+
 
 @app.get("/Cantidad filaciones por mes")
 def cantidad_filmaciones_mes(mes: str):
@@ -258,7 +274,7 @@ def get_actor(nombre_actor: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al leer el archivo Parquet: {str(e)}")
 
-@app.get("/")
+@app.get("/Exito por director")
 def get_director(nombre_director: str):
     """
     Obtiene el exito de un director a base de cuanto retorno tuvo en sus peliculas.
@@ -269,6 +285,24 @@ def get_director(nombre_director: str):
         df = pd.read_parquet("./data/dataset_6.parquet")
 
         result = get_directors(df,nombre_director)
+
+        return JSONResponse(content=jsonable_encoder(result), media_type="application/json")
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Archivo Parquet no encontrado, revisa si la ruta del archivo es correcta")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al leer el archivo Parquet: {str(e)}")
+
+
+@app.get("/Sistema de recomendacion")
+def recomendacion(titulo):
+    """
+    Devuelve 5 peliculas de recomendacion a base de una 
+    """
+
+    try:
+        df = pd.read_parquet("./data/dataset_recomendaciones.parquet")
+
+        result = recomendaciones(df,titulo)
 
         return JSONResponse(content=jsonable_encoder(result), media_type="application/json")
     except FileNotFoundError:
