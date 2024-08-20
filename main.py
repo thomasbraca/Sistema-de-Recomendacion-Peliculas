@@ -278,7 +278,7 @@ def get_actor(nombre_actor: str):
 def get_director(nombre_director: str):
     """
     Obtiene el exito de un director a base de cuanto retorno tuvo en sus peliculas.
-    Tambien nos da un lsitado de todas las peliculas que dirijio
+    Tambien nos da un listado de todas las peliculas que dirigio
     """
 
     try:
